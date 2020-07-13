@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "validaterb/version"
+require_relative 'validate/version'
 
 module Validate
 end

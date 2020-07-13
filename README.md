@@ -7,7 +7,7 @@ Yummy constraint validations for Ruby
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'validaterb'
+gem 'validate-rb'
 ```
 
 And then execute:
@@ -16,7 +16,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install validaterb
+    $ gem install validate-rb
 
 ## Usage
 
