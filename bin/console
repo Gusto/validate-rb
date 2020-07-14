@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
-require "bundler/setup"
-require "validaterb"
+require 'bundler/setup'
+require 'validate'
 
-require "irb"
+require 'irb'
 IRB.start(__FILE__)
