@@ -11,7 +11,7 @@ module Validate
 
       def <=>(other)
         @attributes.map { |attribute, value| value <=> other.send(attribute) }
-            .find { |result| !result.zero? } || 0
+                   .find { |result| !result.zero? } || 0
       end
 
       def method_missing(symbol, *args)
