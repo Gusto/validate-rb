@@ -14,7 +14,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - shell: docker run -ti ruby:2.6.6 {0}
+    - shell: docker run ruby:2.6.6 {0}
       run: |
         bundle install --path vendor/
         bundle exec rspec
