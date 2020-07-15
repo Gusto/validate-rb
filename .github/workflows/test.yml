@@ -8,9 +8,6 @@ on:
     - '**.feature'
   push:
     branches: [ main ]
-    paths:
-    - '**.rb'
-    - '**.feature'
 
 jobs:
   test:
