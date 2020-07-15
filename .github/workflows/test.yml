@@ -15,7 +15,7 @@ jobs:
     - uses: actions/checkout@v2
 
     - shell: |
-        docker run -w "/app" -v "${GITHUB_WORKSPACE}:/app" -v "{0}:/tmp/script" ruby:2.6.6 bash --noprofile --norc -eo pipefail /tmp/script
+        docker run -w /app -v "${{ env.GITHUB_WORKSPACE }}:/app" -v "{0}:/tmp/script" ruby:2.6.6 bash --noprofile --norc -eo pipefail /tmp/script
       run: |
         bundle install --path vendor/
         bundle exec rspec
