@@ -17,6 +17,7 @@ jobs:
     - uses: actions/checkout@v2
 
     - run: |
+        gem install bundler -v '2.1.4'
         bundle install --path vendor/
         bundle exec rspec
         bundle exec cucumber
