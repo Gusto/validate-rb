@@ -48,7 +48,7 @@ RSpec.describe Validate::Constraints do
       expect do
         Validate::Constraints.with_options(values: nil)
       end.to raise_error(ArgumentError) do |error|
-        expect(error.cause).to be_a(Validate::ConstraintViolationError)
+        expect(error.cause).to be_a(Validate::Error::ConstraintViolationError)
         expect(error.cause.violations.size).to eq(1)
       end
     end
