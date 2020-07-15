@@ -1,0 +1,25 @@
+name: Run Tests
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths:
+    - '**.rb'
+    - '**.feature'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        ruby: [2.6.6]
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - shell: docker run -ti ruby:${{ matrix.ruby }} {0}
+      run: |
+        bundle install --path vendor/
+        bundle exec rspec
+        bundle exec cucumber
