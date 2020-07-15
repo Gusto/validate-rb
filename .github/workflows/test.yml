@@ -28,7 +28,7 @@ jobs:
         bundle install
 
     - name: Rspec
-      run: bundle exec rspec
+      run: bundle exec rspec --force-color
 
     - name: Cucumber
-      run: bundle exec cucumber
+      run: bundle exec cucumber --color
