@@ -6,8 +6,11 @@ on:
     paths:
     - '**.rb'
     - '**.feature'
+    - '.github/**'
   push:
     branches: [ main ]
+    paths-ignore:
+    - '**.md'
 
 jobs:
   test:
