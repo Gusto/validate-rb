@@ -10,12 +10,14 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    container:
+      image: ruby:2.6.6
 
     steps:
     - uses: actions/checkout@v2
 
-    - shell: docker run -ti ruby:2.6.6 {0}
-      run: |
+    - run: |
+        gem install bundler -v '2.1.4'
         bundle install --path vendor/
         bundle exec rspec
         bundle exec cucumber
