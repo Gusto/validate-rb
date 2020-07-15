@@ -1,7 +1,12 @@
-name: Run Tests
+name: Test
 
 on:
   pull_request:
+    branches: [ main ]
+    paths:
+    - '**.rb'
+    - '**.feature'
+  push:
     branches: [ main ]
     paths:
     - '**.rb'
@@ -16,8 +21,14 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - run: |
+    - name: Bundler
+      run: |
         gem install bundler -v '2.1.4'
-        bundle install --path vendor/
-        bundle exec rspec
-        bundle exec cucumber
+        bundle config set path 'vendor/'
+        bundle install
+
+    - name: Rspec
+      run: bundle exec rspec
+
+    - name: Cucumber
+      run: bundle exec cucumber
