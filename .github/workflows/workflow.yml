@@ -14,13 +14,14 @@ on:
 
 jobs:
   build:
+    name: "\U0001F4E6 Build image"
     runs-on: ubuntu-latest
 
     steps:
-      - name: "\U0001F4E5 Checkout"
+      - name: 'Checkout'
         uses: actions/checkout@v2
 
-      - name: "\U0001F4E6 Build image"
+      - name: 'Build image'
         run: |
           docker build -f docker/Dockerfile -t validate-rb .
           mkdir pkg
@@ -33,6 +34,7 @@ jobs:
           path: pkg/validate-rb.tar.gz
 
   specs:
+    name: 'Run specs'
     runs-on: ubuntu-latest
     needs: build
 
@@ -50,6 +52,7 @@ jobs:
           echo "::endgroup::"
 
   features:
+    name: 'Run features'
     runs-on: ubuntu-latest
     needs: build
 
@@ -67,6 +70,7 @@ jobs:
           echo "::endgroup::"
 
   publish:
+    name: "\U0001F4E4 Publish"
     if: ${{ github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     needs: [build, specs, features]
