@@ -7,6 +7,9 @@ on:
     - '**.rb'
     - '**.feature'
     - '.github/**'
+    - 'docker'
+    - 'Gemfile'
+    - '*.gemspec'
   push:
     branches: [ main ]
     paths-ignore:
