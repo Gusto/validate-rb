@@ -1,4 +1,4 @@
-# Validate.rb ![Test](https://github.com/Gusto/validate-rb/workflows/Test/badge.svg)
+# Validate.rb ![CI](https://github.com/Gusto/validate-rb/workflows/CI/badge.svg)
 
 Yummy constraint validations for Ruby
 

@@ -1,4 +1,4 @@
-name: Workflow
+name: CI
 
 on:
   pull_request:
@@ -7,6 +7,9 @@ on:
     - '**.rb'
     - '**.feature'
     - '.github/**'
+    - 'docker'
+    - 'Gemfile'
+    - '*.gemspec'
   push:
     branches: [ main ]
     paths-ignore:
