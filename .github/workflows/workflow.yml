@@ -20,7 +20,7 @@ jobs:
       - name: ! "\U0001F4E5 Checkout"
         uses: actions/checkout@v2
 
-      - name: ! "\U0001F4E6" Build image"
+      - name: ! "\U0001F4E6 Build image"
         run: |
           docker build -f docker/Dockerfile -t validate-rb .
           mkdir pkg
