@@ -88,5 +88,5 @@ jobs:
         run: |
           docker load < container/validate-rb.tar.gz
           echo "::group::Running rake release"
-          docker run --rm validate-rb:latest rake relese
+          docker run --rm validate-rb:latest rake release
           echo "::endgroup::"
