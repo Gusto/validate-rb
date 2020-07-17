@@ -17,16 +17,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: ! "\U0001F4E5 Checkout"
+      - name: "\U0001F4E5 Checkout"
         uses: actions/checkout@v2
 
-      - name: ! "\U0001F4E6 Build image"
+      - name: "\U0001F4E6 Build image"
         run: |
           docker build -f docker/Dockerfile -t validate-rb .
           mkdir pkg
           docker save validate-rb:latest | gzip > pkg/validate-rb.tar.gz
 
-      - name: ! "\U0001F4E5 Upload image"
+      - name: "\U0001F4E5 Upload image"
         uses: actions/upload-artifact@v1
         with:
           name: container
@@ -37,7 +37,7 @@ jobs:
     needs: build
 
     steps:
-      - name: ! "\U0001F4E5 Download image"
+      - name: "\U0001F4E5 Download image"
         uses: actions/download-artifact@v1
         with:
           name: container
@@ -52,7 +52,7 @@ jobs:
     needs: build
 
     steps:
-      - name: ! "\U0001F4E5 Download image"
+      - name: "\U0001F4E5 Download image"
         uses: actions/download-artifact@v1
         with:
           name: container
@@ -67,12 +67,12 @@ jobs:
     needs: [build, specs, features]
 
     steps:
-      - name: ! "\U0001F4E5 Download image"
+      - name: "\U0001F4E5 Download image"
         uses: actions/download-artifact@v1
         with:
           name: container
 
-      - name: ! "\U0001F4E5 Release"
+      - name: "\U0001F4E5 Release"
         run: |
           docker load < pkg/validate-rb.tar.gz
           docker run --rm -ti validate-rb:latest rake relese
