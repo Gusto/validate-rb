@@ -45,7 +45,9 @@ jobs:
       - name: 'Rspec'
         run: |
           docker load < container/validate-rb.tar.gz
+          echo "::group::Running rspec"
           docker run --rm validate-rb:latest rspec
+          echo "::endgroup::"
 
   features:
     runs-on: ubuntu-latest
@@ -60,7 +62,9 @@ jobs:
       - name: 'Cucumber'
         run: |
           docker load < container/validate-rb.tar.gz
+          echo "::group::Running cucumber"
           docker run --rm validate-rb:latest cucumber
+          echo "::endgroup::"
 
   publish:
     runs-on: ubuntu-latest
@@ -75,4 +79,6 @@ jobs:
       - name: "\U0001F4E4 Release"
         run: |
           docker load < container/validate-rb.tar.gz
+          echo "::group::Running rake release"
           docker run --rm validate-rb:latest rake relese
+          echo "::endgroup::"
