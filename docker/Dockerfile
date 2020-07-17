@@ -15,7 +15,9 @@ FROM ruby:$ruby-slim
 
 RUN set -eux; \
     apt-get update; \
-    apt-get install -y --no-install-recommends git
+    apt-get install -y --no-install-recommends git; \
+    git config --global user.email "no-reply@github.com"; \
+    git config --global user.name "Github Workflow"
 
 WORKDIR /app
 
