@@ -11,9 +11,11 @@ COPY Gemfile *.gemspec /app/
 COPY lib/ /app/lib
 RUN bundle install
 
-FROM ruby:$ruby-alpine
+FROM ruby:$ruby-slim
 
-RUN apk update && apk add --no-cache git
+RUN set -eux; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends git
 
 WORKDIR /app
 
