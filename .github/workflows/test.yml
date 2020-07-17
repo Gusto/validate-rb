@@ -13,22 +13,65 @@ on:
     - '**.md'
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
-    container:
-      image: ruby:2.6.6
 
     steps:
-    - uses: actions/checkout@v2
+      - name: ':inbox_tray: Checkout'
+        uses: actions/checkout@v2
 
-    - name: Bundler
-      run: |
-        gem install bundler -v '2.1.4'
-        bundle config set path 'vendor/'
-        bundle install
+      - name: ':package: Build image'
+        run: |
+          docker build -f docker/Dockerfile -t validate-rb .
+          docker save validate-rb:latest | gzip > pkg/validate-rb.tar.gz
 
-    - name: Rspec
-      run: bundle exec rspec --force-color
+      - name: ':outbox_tray: Upload image'
+        uses: actions/upload-artifact@v1
+        with:
+          name: container
+          path: pkg/validate-rb.tar.gz
 
-    - name: Cucumber
-      run: bundle exec cucumber --color
+  specs:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: ':inbox_tray: Download image'
+        uses: actions/download-artifact@v1
+        with:
+          name: container
+
+      - name: 'Rspec'
+        run: |
+          docker load < pkg/validate-rb.tar.gz
+          docker run --rm -ti validate-rb:latest rspec
+
+  features:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: ':inbox_tray: Download image'
+        uses: actions/download-artifact@v1
+        with:
+          name: container
+
+      - name: 'Cucumber'
+        run: |
+          docker load < pkg/validate-rb.tar.gz
+          docker run --rm -ti validate-rb:latest cucumber
+
+  publish:
+    runs-on: ubuntu-latest
+    needs: [build, specs, features]
+
+    steps:
+      - name: ':inbox_tray: Download image'
+        uses: actions/download-artifact@v1
+        with:
+          name: container
+
+      - name: ':outbox_tray: Release'
+        run: |
+          docker load < pkg/validate-rb.tar.gz
+          docker run --rm -ti validate-rb:latest rake relese
