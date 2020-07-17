@@ -46,7 +46,7 @@ jobs:
         run: |
           docker load < container/validate-rb.tar.gz
           echo "::group::Running rspec"
-          docker run --rm validate-rb:latest rspec
+          docker run --rm validate-rb:latest rspec --force-color
           echo "::endgroup::"
 
   features:
@@ -63,7 +63,7 @@ jobs:
         run: |
           docker load < container/validate-rb.tar.gz
           echo "::group::Running cucumber"
-          docker run --rm validate-rb:latest cucumber
+          docker run --rm validate-rb:latest cucumber --color
           echo "::endgroup::"
 
   publish:
