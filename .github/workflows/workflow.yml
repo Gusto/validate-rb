@@ -26,7 +26,7 @@ jobs:
           mkdir pkg
           docker save validate-rb:latest | gzip > pkg/validate-rb.tar.gz
 
-      - name: "\U0001F4E5 Upload image"
+      - name: "\U0001F4E4 Upload image"
         uses: actions/upload-artifact@v1
         with:
           name: container
@@ -72,7 +72,7 @@ jobs:
         with:
           name: container
 
-      - name: "\U0001F4E5 Release"
+      - name: "\U0001F4E4 Release"
         run: |
           docker load < pkg/validate-rb.tar.gz
           docker run --rm -ti validate-rb:latest rake relese
