@@ -1,0 +1,13 @@
+{
+  "name": "validate-rb",
+  "version": "0.0.0",
+  "description": "Yummy constraint validations for Ruby",
+  "repository": "https://github.com/Gusto/validate-rb",
+  "author": "Bulat Shakirzyanov <bulat.shakirzyanov@gusto.com>)",
+  "license": "MIT",
+  "private": true,
+  "devDependencies": {
+    "semantic-release": "^17.1.1",
+    "semantic-release-rubygem": "^1.0.3"
+  }
+}
