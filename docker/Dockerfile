@@ -26,4 +26,6 @@ COPY --from=build /usr/local/bundle /usr/local/bundle
 COPY --from=build /app /app
 COPY . /app
 
+RUN git config --local --unset http.https://github.com/.extraheader
+
 ENTRYPOINT ["bundle", "exec"]
