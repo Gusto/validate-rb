@@ -97,12 +97,12 @@ jobs:
             email = no-reply@github.com
             name = Github Workflow
           [http "https://github.com/"]
-            extraheader = AUTHORIZATION: basic $(echo x-access-token:${{ secrets.GITHUB_TOKEN }} | base64)
+            extraheader = AUTHORIZATION: basic $(echo "x-access-token:${{ secrets.GITHUB_TOKEN }}" | base64)
           EOF
           echo "::endgroup::"
           echo "::group::Performing release"
           docker load < container/validate-rb.tar.gz
-          docker run --rm \
+          docker run -e GIT_CURL_VERBOSE=1 --rm \
             -v "$(pwd)/gem_credentials:/root/.gem/credentials" \
             -v "$(pwd)/git_config:/root/.gitconfig" \
             validate-rb:latest rake release
