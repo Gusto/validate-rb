@@ -76,12 +76,21 @@ jobs:
     name: "\U0001F4E4 Publish"
     # if: ${{ github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
-    container: circleci/ruby:2.7-node
     needs: [build, specs, features]
 
     steps:
       - name: 'Checkout'
         uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12
+
+      - name: Setup Ruby
+        uses: actions/setup-ruby@v1
+        with:
+          ruby-version: 2.6
 
       - name: 'Release'
         run: |
