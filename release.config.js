@@ -25,6 +25,7 @@ module.exports = {
     'main',
     'next',
     'next-major',
+    'set-up-semantic-release',
     {name: 'beta', prerelease: true},
     {name: 'alpha', prerelease: true},
   ],
