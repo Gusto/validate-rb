@@ -90,7 +90,7 @@ jobs:
           :github: Bearer ${{ secrets.GITHUB_TOKEN }}
           :rubygems_api_key: ${{ secrets.RUBYGEMS_API_KEY }}
           EOF
-          chmod 0600 ~/.gem/credentials
+          chmod 0600 gem_credentials
           docker load < container/validate-rb.tar.gz
           echo "::group::Running rake release"
           docker run -v "$(pwd)/gem_credentials:/root/.gem/credentials" --rm validate-rb:latest rake release
