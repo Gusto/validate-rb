@@ -96,8 +96,8 @@ jobs:
           [user]
             email = no-reply@github.com
             name = Github Workflow
-          [http "https://github.com/"]
-            extraheader = AUTHORIZATION: basic $(echo "x-access-token:${{ secrets.GITHUB_TOKEN }}" | base64)
+          [credential "https://github.com/"]
+            helper = "! f() { echo username=x-access-token; echo password=${{ secrets.GITHUB_TOKEN }}; };f"
           EOF
           echo "::endgroup::"
           echo "::group::Performing release"
