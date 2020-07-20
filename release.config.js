@@ -20,12 +20,12 @@ module.exports = {
     '@semantic-release/github',
   ],
   branches: [
-    '+([0-9])?(.{+([0-9]),x}).x',
+    // '+([0-9])?(.{+([0-9]),x}).x',
     'main',
-    'next',
-    'next-major',
-    'set-up-semantic-release',
-    {name: 'beta', prerelease: true},
+    // 'next',
+    // 'next-major',
+    // {name: 'set-up-semantic-release', prerelease: true},
+    // {name: 'beta', prerelease: true},
     {name: 'alpha', prerelease: true},
   ],
 };

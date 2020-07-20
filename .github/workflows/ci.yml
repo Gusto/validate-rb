@@ -11,7 +11,7 @@ on:
     - 'Gemfile'
     - '*.gemspec'
   push:
-    branches: [ main ]
+    branches: [ main, alpha ]
     paths-ignore:
     - '**.md'
 
