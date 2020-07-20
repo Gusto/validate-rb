@@ -74,7 +74,7 @@ jobs:
 
   publish:
     name: "\U0001F4E4 Publish"
-    if: ${{ github.ref == 'refs/heads/main' }}
+    # if: ${{ github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     container: circleci/ruby:2.7-node
     needs: [build, specs, features]
