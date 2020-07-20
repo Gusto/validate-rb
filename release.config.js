@@ -1,5 +1,4 @@
 module.exports = {
-  extends: ['semantic-release-commit-filter'],
   plugins: [
     '@semantic-release/commit-analyzer',
     '@semantic-release/release-notes-generator',
