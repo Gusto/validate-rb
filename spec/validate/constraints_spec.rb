@@ -27,7 +27,7 @@ RSpec.describe Validate::Constraints do
 
       expect do
         Validate::Constraints.no_options(unknown: false)
-      end.to raise_error(ArgumentError, /undefined options/)
+      end.to raise_error(ArgumentError, /unexpected options/)
     end
 
     it 'raises on unsupported options from initializer' do
@@ -37,7 +37,7 @@ RSpec.describe Validate::Constraints do
 
       expect do
         Validate::Constraints.unknown_options
-      end.to raise_error(ArgumentError, /undefined options/)
+      end.to raise_error(ArgumentError, /unexpected options/)
     end
 
     it 'validates options' do
