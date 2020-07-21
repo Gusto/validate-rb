@@ -98,4 +98,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           yarn install
-          yarn semantic-release --dry-run
+          yarn semantic-release
