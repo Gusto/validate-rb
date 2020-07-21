@@ -42,9 +42,9 @@ jobs:
       uses: actions/cache@v2
       with:
         path: vendor/bundle
-        key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+        key: ${{ runner.os }}-ruby-${{ matrix.ruby }}-gems-${{ hashFiles('**/Gemfile.lock') }}
         restore-keys: |
-          ${{ runner.os }}-gems-
+          ${{ runner.os }}-ruby-${{ matrix.ruby }}-gems-
 
     - name: Bundle
       run: |
@@ -79,9 +79,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: vendor/bundle
-          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+          key: ${{ runner.os }}-ruby-2.6-gems-${{ hashFiles('**/Gemfile.lock') }}
           restore-keys: |
-            ${{ runner.os }}-gems-
+            ${{ runner.os }}-ruby-2.6-gems-
 
       - name: Bundle
         run: |
