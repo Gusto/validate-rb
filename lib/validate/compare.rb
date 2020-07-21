@@ -2,8 +2,9 @@
 
 module Validate
   module Compare
-    class ByAttributes
+    class WithAttributes
       include Comparable
+      prepend UsingTransformation
 
       def initialize(attributes)
         @attributes = attributes
@@ -13,22 +14,43 @@ module Validate
         @attributes.map { |attribute, value| value <=> other.send(attribute) }
                    .find { |result| !result.zero? } || 0
       end
+    end
 
-      def method_missing(symbol, *args)
-        return super unless args.empty? && respond_to_missing?(symbol)
+    class ToValue
+      include Comparable
+      prepend UsingTransformation
 
-        @attributes[symbol]
+      def initialize(value_block)
+        @value_block = value_block
       end
 
-      def respond_to_missing?(attribute, _ = false)
-        @attributes.include?(attribute)
+      def <=>(other)
+        @value_block.call <=> other
+      end
+    end
+
+    module UsingTransformation
+      def using(&transform_block)
+        @transform_block = transform_block
+        self
+      end
+
+      def <=>(other)
+        return super if @transform_block.nil?
+
+        super(@transform_block.call(other))
       end
     end
 
     module_function
 
     def attributes(**attributes)
-      ByAttributes.new(attributes)
+      WithAttributes.new(attributes)
+    end
+
+    def to(value = nil, &value_block)
+      value_block ||= value.is_a?(Proc) ? value : proc { value }
+      ToValue.new(value_block)
     end
   end
 end
