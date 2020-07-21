@@ -62,8 +62,8 @@ Feature: Valid constraint
         end
       end
 
-      def validate(*args)
-        print_violations group_violations(Validate.validate(*args))
+      def validate(*args, **kwargs)
+        print_violations group_violations(Validate.validate(*args, **kwargs))
       end
       """
 
