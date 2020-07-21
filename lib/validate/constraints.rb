@@ -20,7 +20,7 @@ module Validate
       end
 
       @reserved_names[name] = name
-      constraint_class = Constraint.create_class(name, defaults, &body)
+      constraint_class = Constraint.create_class(name, **defaults, &body)
       Constraints.const_set(Helpers.camelize(name), constraint_class)
       define_method(name, &constraint_class.method(:new))
       module_function(name)
