@@ -2,7 +2,7 @@ name: CI
 
 on:
   pull_request:
-    branches: [ main ]
+    branches: [ main, alpha ]
     paths:
     - '**.rb'
     - '**.feature'
@@ -11,7 +11,7 @@ on:
     - 'Gemfile'
     - '*.gemspec'
   push:
-    branches: [ main ]
+    branches: [ main, alpha ]
     paths-ignore:
     - '**.md'
 
@@ -74,36 +74,25 @@ jobs:
 
   publish:
     name: "\U0001F4E4 Publish"
-    if: ${{ github.ref == 'refs/heads/main' }}
+    if: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/alpha') }}
     runs-on: ubuntu-latest
     needs: [build, specs, features]
 
     steps:
-      - name: "\U0001F4E5 Download image"
-        uses: actions/download-artifact@v1
-        with:
-          name: container
+      - name: 'Checkout'
+        uses: actions/checkout@v2
 
-      - name: "\U0001F4E4 Release"
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12
+
+      - name: Setup Ruby
+        uses: actions/setup-ruby@v1
+        with:
+          ruby-version: 2.6
+
+      - name: 'Release'
         run: |
-          echo "::group::Configuring release credentials"
-          cat << EOF > gem_credentials
-          :github: Bearer ${{ secrets.GITHUB_TOKEN }}
-          :rubygems_api_key: ${{ secrets.RUBYGEMS_API_KEY }}
-          EOF
-          chmod 0600 gem_credentials
-          cat << EOF > git_config
-          [user]
-            email = no-reply@github.com
-            name = Github Workflow
-          [credential "https://github.com/"]
-            helper = "! f() { echo username=x-access-token; echo password=${{ secrets.GITHUB_TOKEN }}; };f"
-          EOF
-          echo "::endgroup::"
-          echo "::group::Performing release"
-          docker load < container/validate-rb.tar.gz
-          docker run -e GIT_CURL_VERBOSE=1 --rm \
-            -v "$(pwd)/gem_credentials:/root/.gem/credentials" \
-            -v "$(pwd)/git_config:/root/.gitconfig" \
-            validate-rb:latest rake release
-          echo "::endgroup::"
+          yarn install
+          yarn semantic-release --dry-run

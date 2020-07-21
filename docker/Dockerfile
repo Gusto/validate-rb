@@ -7,7 +7,7 @@ WORKDIR /app
 RUN gem install bundler -v '2.1.4'
 RUN bundle config set path 'vendor/'
 
-COPY Gemfile *.gemspec /app/
+COPY Gemfile* *.gemspec /app/
 COPY lib/ /app/lib
 RUN bundle install
 
