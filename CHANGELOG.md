@@ -1,3 +1,10 @@
+# [1.0.0-alpha.2](https://github.com/Gusto/validate-rb/compare/v1.0.0-alpha.1...v1.0.0-alpha.2) (2020-07-22)
+
+
+### Features
+
+* value comparators and transformer ([#7](https://github.com/Gusto/validate-rb/issues/7)) ([1843aca](https://github.com/Gusto/validate-rb/commit/1843acac9d3812576e7b906d477528a72a3c64c8))
+
 # 1.0.0-alpha.1 (2020-07-21)
 
 
