@@ -367,6 +367,26 @@ module Validate
       end
     end
 
+    define(:start_with, message: 'start with %{constraint.prefix}') do
+      option(:prefix) do
+        not_blank(message: 'prefix is required')
+        is_a(String, message: 'prefix must be a String')
+      end
+
+      initialize do |prefix = nil|
+        return {} if prefix.nil?
+
+        { prefix: prefix }
+      end
+      evaluate do |value|
+        pass if value.nil?
+        fail unless value.respond_to?(:start_with?) && value.start_with?(options[:prefix])
+      end
+      key do
+        "start_with_#{options[:prefix]}"
+      end
+    end
+
     define(
         :unique,
         message: 'have unique %{constraint.describe_unique_attribute}'
