@@ -427,6 +427,15 @@ module Validate
       end
     end
 
+    define(:uuid, message: 'be a uuid') do
+      UUID_REGEXP = %r{\b\h{8}\b-\h{4}-\h{4}-\h{4}-\b\h{12}\b}
+
+      evaluate do |value|
+        pass if value.nil?
+        fail unless UUID_REGEXP.match?(value.to_s)
+      end
+    end
+
     define(
         :unique,
         message: 'have unique %{constraint.describe_unique_attribute}'
