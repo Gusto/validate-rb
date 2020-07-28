@@ -1,6 +1,6 @@
 Feature: EndWith constraint
 
-  `end_with` constraint evaluates a string against a regular expression
+  `end_with` constraint checks string's suffix
 
   Background: EndWith validator
     Given a file named "validator.rb" with:

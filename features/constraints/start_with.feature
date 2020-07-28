@@ -1,6 +1,6 @@
 Feature: StartWith constraint
 
-  `start_with` constraint evaluates a string against a regular expression
+  `start_with` constraint checks string's prefix
 
   Background: StartWith validator
     Given a file named "validator.rb" with:
