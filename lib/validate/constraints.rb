@@ -387,6 +387,26 @@ module Validate
       end
     end
 
+    define(:end_with, message: 'end with %{constraint.suffix}') do
+      option(:suffix) do
+        not_blank(message: 'suffix is required')
+        is_a(String, message: 'suffix must be a String')
+      end
+
+      initialize do |suffix = nil|
+        return {} if suffix.nil?
+
+        { suffix: suffix }
+      end
+      evaluate do |value|
+        pass if value.nil?
+        fail unless value.respond_to?(:end_with?) && value.end_with?(options[:suffix])
+      end
+      key do
+        "end_with_#{options[:suffix]}"
+      end
+    end
+
     define(
         :unique,
         message: 'have unique %{constraint.describe_unique_attribute}'
