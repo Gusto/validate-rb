@@ -104,6 +104,40 @@ module Validate
       key { "length_over_#{options[:min]}_under_#{options[:max]}" }
     end
 
+    define(:bytesize, message: 'have byte length of %{constraint.describe_length}') do
+      option(:min) { respond_to(:>, message: 'min must respond to :>') }
+      option(:max) { respond_to(:<, message: 'max must respond to :<') }
+
+      initialize do |range = nil|
+        case range
+        when ::Range
+          { min: range.min, max: range.max }
+        else
+          { min: range, max: range }
+        end
+      end
+      evaluate do |value|
+        pass if value.nil?
+        fail unless value.respond_to?(:bytesize)
+
+        bytesize = value.bytesize
+        fail if (options[:min]&.> bytesize) || (options[:max]&.< bytesize)
+      end
+
+      def describe_length
+        if options[:max] == options[:min]
+          options[:max].to_s
+        elsif options[:max].nil?
+          "at least #{options[:min]}"
+        elsif options[:min].nil?
+          "at most #{options[:max]}"
+        else
+          "at least #{options[:min]} and at most #{options[:max]}"
+        end
+      end
+      key { "bytesize_over_#{options[:min]}_under_#{options[:max]}" }
+    end
+
     define(:one_of, message: 'be %{constraint.describe_presence}') do
       option(:values) do
         respond_to(:include?, message: 'values must respond to :include?')
@@ -305,6 +339,30 @@ module Validate
             constraints.evaluate(ctx[i])
             i += 1
           end
+        end
+      end
+    end
+
+    define(:each_key, message: 'have keys') do
+      option(:constraints) do
+        not_nil(message: 'constraints are required')
+        is_a(AST::DefinitionContext, message: 'constraints must be a DefinitionContext')
+      end
+
+      initialize do |&block|
+        return {} if block.nil?
+
+        { constraints: AST::DefinitionContext.create(&block) }
+      end
+      evaluate do |collection, ctx|
+        pass if collection.nil?
+        fail unless collection.respond_to?(:each_key)
+
+        constraints = options[:constraints]
+        collection.each_key do |key|
+          key_ctx = Constraints::ValidationContext.key(key)
+          constraints.evaluate(key_ctx)
+          ctx.merge(key_ctx) if key_ctx.has_violations?
         end
       end
     end
