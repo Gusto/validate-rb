@@ -13,7 +13,7 @@ Feature: RespondTo constraint
         end
       end
 
-      Validate::Validators.define(:value) do
+      Validate::Validators.define(:has_test_method) do
         respond_to(:test_method, message: '%{value.inspect} must respond to :%{constraint.method_name}')
       end
       """
@@ -23,7 +23,7 @@ Feature: RespondTo constraint
       """ruby
       require_relative 'validator.rb'
 
-      puts Validate.validate(false, as: :value)
+      puts Validate.validate(false, as: :has_test_method)
       """
     When I run `ruby script.rb`
     Then the output should contain exactly:
@@ -36,7 +36,7 @@ Feature: RespondTo constraint
       """ruby
       require_relative 'validator.rb'
 
-      puts Validate.validate(nil, as: :value)
+      puts Validate.validate(nil, as: :has_test_method)
       """
     When I run `ruby script.rb`
     Then the output should not contain anything
@@ -46,7 +46,7 @@ Feature: RespondTo constraint
       """ruby
       require_relative 'validator.rb'
 
-      puts Validate.validate(TestClass.new, as: :value)
+      puts Validate.validate(TestClass.new, as: :has_test_method)
       """
     When I run `ruby script.rb`
     Then the output should not contain anything
