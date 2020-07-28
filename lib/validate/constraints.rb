@@ -407,6 +407,26 @@ module Validate
       end
     end
 
+    define(:contain, message: 'contain %{constraint.substring}') do
+      option(:substring) do
+        not_blank(message: 'substring is required')
+        is_a(String, message: 'substring must be a String')
+      end
+
+      initialize do |substring = nil|
+        return {} if substring.nil?
+
+        { substring: substring }
+      end
+      evaluate do |value|
+        pass if value.nil?
+        fail unless value.respond_to?(:include?) && value.include?(options[:substring])
+      end
+      key do
+        "contain_#{options[:substring]}"
+      end
+    end
+
     define(
         :unique,
         message: 'have unique %{constraint.describe_unique_attribute}'
