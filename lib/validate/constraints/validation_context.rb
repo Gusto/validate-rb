@@ -11,7 +11,12 @@ module Validate
         new(value, Path.new, violations)
       end
 
-      attr_reader :value
+      def self.key(key, violations = [])
+        new(key, Path.new([KeyPath.new(key)]), violations)
+      end
+
+      attr_reader :value, :violations
+      protected :violations
 
       def initialize(value, path = Path.new, violations = [])
         @value      = value
@@ -61,8 +66,17 @@ module Validate
         !@violations.empty?
       end
 
-      def to_err
-        Error::ConstraintViolationError.new(@violations.freeze)
+      def to_err(backtrace = [])
+        err = Error::ConstraintViolationError.new(@violations.freeze)
+        err.set_backtrace(backtrace)
+        err
+      end
+
+      def merge(other)
+        other.violations.each do |violation|
+          @violations << Constraint::Violation.new(violation.value, @path.child(violation.path), violation.constraint)
+        end
+        self
       end
 
       private
@@ -87,7 +101,14 @@ module Validate
         end
 
         def child(path)
-          Path.new(@paths.dup << path)
+          case path
+          when KeyPath, AttrPath
+            Path.new(@paths.dup << path)
+          when Path
+            Path.new(@paths.dup << path.to_a)
+          else
+            raise ArgumentError, 'invalid path'
+          end
         end
 
         def to_s

@@ -116,13 +116,27 @@ module Validate
           expects_kwargs = true if kind == :keyrest
         end
 
-        define_constraint_method(:initialize, initialize_block) do |*args, **kwargs, &block|
-          known_options, extra_kwargs =
-              kwargs.partition { |k, _| supported_options.include?(k) }
-                  .map { |h| Hash[h] }
-          args << extra_kwargs if expects_kwargs || !extra_kwargs.empty?
+        define_constraint_method(:initialize, initialize_block) do |*args, &block|
+          if args.last.is_a?(Hash)
+            known_options, kwargs =
+                args.pop
+                    .partition { |k, _| supported_options.include?(k) }
+                    .map { |h| Hash[h] }
 
-          merged_options = {}.merge!(super(*args, &block), known_options)
+            if !expects_kwargs && !kwargs.empty?
+              args << kwargs
+              kwargs = {}
+            end
+
+            if expects_kwargs
+              merged_options = {}.merge!(super(*args, **kwargs, &block), known_options)
+            else
+              args << kwargs unless kwargs.empty?
+              merged_options = {}.merge!(super(*args, &block), known_options)
+            end
+          else
+            merged_options = super(*args, &block)
+          end
 
           options = supported_options.each_with_object({}) do |(n, opt), opts|
             opts[n] = opt.get_or_default(merged_options)
@@ -130,7 +144,7 @@ module Validate
 
           unless merged_options.empty?
             raise Error::ArgumentError,
-                  "undefined options #{merged_options.inspect}"
+                  "unexpected options #{merged_options.inspect}"
           end
 
           @options = options.freeze

@@ -2,7 +2,7 @@ name: CI
 
 on:
   pull_request:
-    branches: [ main ]
+    branches: [ main, alpha ]
     paths:
     - '**.rb'
     - '**.feature'
@@ -11,99 +11,100 @@ on:
     - 'Gemfile'
     - '*.gemspec'
   push:
-    branches: [ main ]
+    branches: [ main, alpha ]
     paths-ignore:
     - '**.md'
 
 jobs:
-  build:
-    name: "\U0001F4E6 Build image"
+  test:
+    name: Ruby ${{ matrix.ruby }}, Run ${{ matrix.task }}
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        ruby:
+        - '2.6'
+        - '2.7'
+        task:
+        - specs
+        - features
+
+    steps:
+    - name: 'Checkout'
+      uses: actions/checkout@v2
+
+    - name: Setup Ruby
+      uses: actions/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby }}
+
+    - name: Cache
+      uses: actions/cache@v2
+      with:
+        path: vendor/bundle
+        key: ${{ runner.os }}-ruby-${{ matrix.ruby }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-ruby-${{ matrix.ruby }}-gems-
+
+    - name: Bundle
+      run: |
+        gem install bundler -v '2.1.4'
+        bundle config path vendor/bundle
+        bundle install
+
+    - name: Run ${{ matrix.task }}
+      run: bundle exec rake ${{ matrix.task }}
+
+  release:
+    name: "\U0001F4E4 Publish"
+    if: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/alpha') }}
+    runs-on: ubuntu-latest
+    needs: [test]
 
     steps:
       - name: 'Checkout'
         uses: actions/checkout@v2
 
-      - name: 'Build image'
-        run: |
-          docker build -f docker/Dockerfile -t validate-rb .
-          mkdir pkg
-          docker save validate-rb:latest | gzip > pkg/validate-rb.tar.gz
-
-      - name: "\U0001F4E4 Upload image"
-        uses: actions/upload-artifact@v1
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
         with:
-          name: container
-          path: pkg/validate-rb.tar.gz
+          node-version: 12
 
-  specs:
-    name: 'Run specs'
-    runs-on: ubuntu-latest
-    needs: build
-
-    steps:
-      - name: "\U0001F4E5 Download image"
-        uses: actions/download-artifact@v1
+      - name: Setup Ruby
+        uses: actions/setup-ruby@v1
         with:
-          name: container
+          ruby-version: 2.6
 
-      - name: 'Rspec'
-        run: |
-          docker load < container/validate-rb.tar.gz
-          echo "::group::Running rspec"
-          docker run --rm validate-rb:latest rspec --force-color
-          echo "::endgroup::"
-
-  features:
-    name: 'Run features'
-    runs-on: ubuntu-latest
-    needs: build
-
-    steps:
-      - name: "\U0001F4E5 Download image"
-        uses: actions/download-artifact@v1
+      - name: Cache gems
+        uses: actions/cache@v2
         with:
-          name: container
+          path: vendor/bundle
+          key: ${{ runner.os }}-ruby-2.6-gems-${{ hashFiles('**/Gemfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-ruby-2.6-gems-
 
-      - name: 'Cucumber'
+      - name: Bundle
         run: |
-          docker load < container/validate-rb.tar.gz
-          echo "::group::Running cucumber"
-          docker run --rm validate-rb:latest cucumber --color
-          echo "::endgroup::"
+          gem install bundler -v '2.1.4'
+          bundle config path vendor/bundle
+          bundle install
 
-  publish:
-    name: "\U0001F4E4 Publish"
-    if: ${{ github.ref == 'refs/heads/main' }}
-    runs-on: ubuntu-latest
-    needs: [build, specs, features]
+      - name: Yarn cache path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
 
-    steps:
-      - name: "\U0001F4E5 Download image"
-        uses: actions/download-artifact@v1
+      - uses: actions/cache@v2
         with:
-          name: container
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
 
-      - name: "\U0001F4E4 Release"
-        run: |
-          echo "::group::Configuring release credentials"
-          cat << EOF > gem_credentials
-          :github: Bearer ${{ secrets.GITHUB_TOKEN }}
-          :rubygems_api_key: ${{ secrets.RUBYGEMS_API_KEY }}
-          EOF
-          chmod 0600 gem_credentials
-          cat << EOF > git_config
-          [user]
-            email = no-reply@github.com
-            name = Github Workflow
-          [credential "https://github.com/"]
-            helper = "! f() { echo username=x-access-token; echo password=${{ secrets.GITHUB_TOKEN }}; };f"
-          EOF
-          echo "::endgroup::"
-          echo "::group::Performing release"
-          docker load < container/validate-rb.tar.gz
-          docker run -e GIT_CURL_VERBOSE=1 --rm \
-            -v "$(pwd)/gem_credentials:/root/.gem/credentials" \
-            -v "$(pwd)/git_config:/root/.gitconfig" \
-            validate-rb:latest rake release
-          echo "::endgroup::"
+      - name: Yarn install
+        run: yarn install
+
+      - name: 'Release'
+        env:
+          GEM_HOST_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: yarn semantic-release

@@ -2,6 +2,7 @@
 
 require 'forwardable'
 require 'monitor'
+require 'ipaddr'
 
 require_relative 'validate/version'
 require_relative 'validate/errors'

@@ -1,34 +1,30 @@
-Feature: RespondTo constraint
+Feature: Uuid constraint
 
-  `respond_to` constraint guarantees object responds to method
+  `uuid` constraint checks that a string is a properly formatted uuid
 
-  Background: RespondTo validator
+  Background: Uuid validator
     Given a file named "validator.rb" with:
       """ruby
+      require 'uri'
+
       require 'validate'
 
-      class TestClass
-        def test_method
-          puts "hello"
-        end
-      end
-
-      Validate::Validators.define(:has_test_method) do
-        respond_to(:test_method, message: '%{value.inspect} must respond to :%{constraint.method_name}')
+      Validate::Validators.define(:uuid) do
+        uuid(message: '%{value.inspect} must be a uuid')
       end
       """
 
-  Scenario: Value is invalid
+  Scenario: Values are invalid
     Given a file named "script.rb" with:
       """ruby
       require_relative 'validator.rb'
 
-      puts Validate.validate(false, as: :has_test_method)
+      puts Validate.validate('this will fail', as: :uuid)
       """
     When I run `ruby script.rb`
     Then the output should contain exactly:
       """
-      false must respond to :test_method
+      "this will fail" must be a uuid
       """
 
   Scenario: Values are nil
@@ -36,17 +32,18 @@ Feature: RespondTo constraint
       """ruby
       require_relative 'validator.rb'
 
-      puts Validate.validate(nil, as: :has_test_method)
+      puts Validate.validate(nil, as: :uuid)
       """
     When I run `ruby script.rb`
     Then the output should not contain anything
 
-  Scenario: Value is valid
+  Scenario: Values are valid
     Given a file named "script.rb" with:
       """ruby
       require_relative 'validator.rb'
+      require 'securerandom'
 
-      puts Validate.validate(TestClass.new, as: :has_test_method)
+      puts Validate.validate(SecureRandom.uuid, as: :uuid)
       """
     When I run `ruby script.rb`
     Then the output should not contain anything

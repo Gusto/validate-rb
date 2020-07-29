@@ -5,8 +5,8 @@ module Validate
   module AST
     def self.build(*args, &block)
       Generator.new
-          .generate(*args, &block)
-          .freeze
+               .generate(*args, &block)
+               .freeze
     end
 
     class DefinitionContext
@@ -65,8 +65,8 @@ module Validate
 
       def evaluate(ctx)
         @constraints.each_value
-            .reject { |c| catch(:pending) { c.valid?(ctx.value, ctx) } }
-            .each { |c| ctx.add_violation(c) }
+                    .reject { |c| catch(:pending) { c.valid?(ctx.value, ctx) } }
+                    .each { |c| ctx.add_violation(c) }
         ctx
       end
     end
@@ -156,7 +156,7 @@ module Validate
             args.map { |arg| [:value, arg] },
             block,
             ::Kernel.caller
-                .reject { |line| line.include?(__FILE__) }
+                    .reject { |line| line.include?(__FILE__) }
         ]
         self
       end
@@ -286,10 +286,10 @@ module Validate
 
         def message
           'both ' + @constraints
-                        .size
-                        .times
-                        .map { |i| "[#{constraint_message(i)}]" }
-                        .join(', and ')
+                    .size
+                    .times
+                    .map { |i| "[#{constraint_message(i)}]" }
+                    .join(', and ')
         end
       end
 
@@ -327,10 +327,10 @@ module Validate
 
         def message
           'either ' + @constraints
-                          .size
-                          .times
-                          .map { |i| "[#{constraint_message(i)}]" }
-                          .join(', or ')
+                      .size
+                      .times
+                      .map { |i| "[#{constraint_message(i)}]" }
+                      .join(', or ')
         end
       end
 
@@ -364,10 +364,10 @@ module Validate
           return "not [#{constraint_message(0)}]" if @constraints.one?
 
           'neither ' + @constraints
-                           .size
-                           .times
-                           .map { |i| "[#{constraint_message(i)}]" }
-                           .join(', nor ')
+                       .size
+                       .times
+                       .map { |i| "[#{constraint_message(i)}]" }
+                       .join(', nor ')
         end
 
         def inspect
