@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    validate-rb (1.0.0.alpha.2)
+    validate-rb (1.0.0.alpha.3)
 
 GEM
   remote: https://rubygems.org/

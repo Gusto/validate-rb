@@ -1,3 +1,10 @@
+# [1.0.0-alpha.3](https://github.com/Gusto/validate-rb/compare/v1.0.0-alpha.2...v1.0.0-alpha.3) (2020-07-29)
+
+
+### Bug Fixes
+
+* singleton method args ([#16](https://github.com/Gusto/validate-rb/issues/16)) ([f0dec3c](https://github.com/Gusto/validate-rb/commit/f0dec3cd750eff30ea1fe5fb378cecf56617b478))
+
 # [1.0.0-alpha.2](https://github.com/Gusto/validate-rb/compare/v1.0.0-alpha.1...v1.0.0-alpha.2) (2020-07-29)
 
 
