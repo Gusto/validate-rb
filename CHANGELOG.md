@@ -1,3 +1,10 @@
+# [1.0.0-alpha.2](https://github.com/Gusto/validate-rb/compare/v1.0.0-alpha.1...v1.0.0-alpha.2) (2020-07-29)
+
+
+### Features
+
+* additional validation constraints ([#15](https://github.com/Gusto/validate-rb/issues/15)) ([4c3e187](https://github.com/Gusto/validate-rb/commit/4c3e187c6b6bbed396935379b7faf5b66d7dc626))
+
 # 1.0.0-alpha.1 (2020-07-22)
 
 
