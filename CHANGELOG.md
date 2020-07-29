@@ -1,3 +1,10 @@
+# 1.0.0 (2020-07-29)
+
+
+### Features
+
+* first stable release ([#19](https://github.com/Gusto/validate-rb/issues/19)) ([22e4db2](https://github.com/Gusto/validate-rb/commit/22e4db21f335009718017231c91341d9d834107f))
+
 # [1.0.0-alpha.3](https://github.com/Gusto/validate-rb/compare/v1.0.0-alpha.2...v1.0.0-alpha.3) (2020-07-29)
 
 
