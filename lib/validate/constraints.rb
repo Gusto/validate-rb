@@ -436,6 +436,15 @@ module Validate
       end
     end
 
+    define(:hostname, message: 'be a hostname') do
+      HOSTNAME_REGEXP = URI::HOST
+
+      evaluate do |value|
+        pass if value.nil?
+        fail unless HOSTNAME_REGEXP.match?(value.to_s)
+      end
+    end
+
     define(
         :unique,
         message: 'have unique %{constraint.describe_unique_attribute}'
