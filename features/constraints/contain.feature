@@ -1,34 +1,30 @@
-Feature: RespondTo constraint
+Feature: Contain constraint
 
-  `respond_to` constraint guarantees object responds to method
+  `contain` constraint checks that a string is contained within another string
 
-  Background: RespondTo validator
+  Background: Contain validator
     Given a file named "validator.rb" with:
       """ruby
+      require 'uri'
+
       require 'validate'
 
-      class TestClass
-        def test_method
-          puts "hello"
-        end
-      end
-
-      Validate::Validators.define(:has_test_method) do
-        respond_to(:test_method, message: '%{value.inspect} must respond to :%{constraint.method_name}')
+      Validate::Validators.define(:negation) do
+        contain('not', message: '%{value.inspect} must have "not"')
       end
       """
 
-  Scenario: Value is invalid
+  Scenario: Values are invalid
     Given a file named "script.rb" with:
       """ruby
       require_relative 'validator.rb'
 
-      puts Validate.validate(false, as: :has_test_method)
+      puts Validate.validate('this will fail', as: :negation)
       """
     When I run `ruby script.rb`
     Then the output should contain exactly:
       """
-      false must respond to :test_method
+      "this will fail" must have "not"
       """
 
   Scenario: Values are nil
@@ -36,17 +32,17 @@ Feature: RespondTo constraint
       """ruby
       require_relative 'validator.rb'
 
-      puts Validate.validate(nil, as: :has_test_method)
+      puts Validate.validate(nil, as: :negation)
       """
     When I run `ruby script.rb`
     Then the output should not contain anything
 
-  Scenario: Value is valid
+  Scenario: Values are valid
     Given a file named "script.rb" with:
       """ruby
       require_relative 'validator.rb'
 
-      puts Validate.validate(TestClass.new, as: :has_test_method)
+      puts Validate.validate('this will not fail', as: :negation)
       """
     When I run `ruby script.rb`
     Then the output should not contain anything

@@ -104,6 +104,40 @@ module Validate
       key { "length_over_#{options[:min]}_under_#{options[:max]}" }
     end
 
+    define(:bytesize, message: 'have byte length of %{constraint.describe_length}') do
+      option(:min) { respond_to(:>, message: 'min must respond to :>') }
+      option(:max) { respond_to(:<, message: 'max must respond to :<') }
+
+      initialize do |range = nil|
+        case range
+        when ::Range
+          { min: range.min, max: range.max }
+        else
+          { min: range, max: range }
+        end
+      end
+      evaluate do |value|
+        pass if value.nil?
+        fail unless value.respond_to?(:bytesize)
+
+        bytesize = value.bytesize
+        fail if (options[:min]&.> bytesize) || (options[:max]&.< bytesize)
+      end
+
+      def describe_length
+        if options[:max] == options[:min]
+          options[:max].to_s
+        elsif options[:max].nil?
+          "at least #{options[:min]}"
+        elsif options[:min].nil?
+          "at most #{options[:max]}"
+        else
+          "at least #{options[:min]} and at most #{options[:max]}"
+        end
+      end
+      key { "bytesize_over_#{options[:min]}_under_#{options[:max]}" }
+    end
+
     define(:one_of, message: 'be %{constraint.describe_presence}') do
       option(:values) do
         respond_to(:include?, message: 'values must respond to :include?')
@@ -306,6 +340,146 @@ module Validate
             i += 1
           end
         end
+      end
+    end
+
+    define(:each_key, message: 'have keys') do
+      option(:constraints) do
+        not_nil(message: 'constraints are required')
+        is_a(AST::DefinitionContext, message: 'constraints must be a DefinitionContext')
+      end
+
+      initialize do |&block|
+        return {} if block.nil?
+
+        { constraints: AST::DefinitionContext.create(&block) }
+      end
+      evaluate do |collection, ctx|
+        pass if collection.nil?
+        fail unless collection.respond_to?(:each_key)
+
+        constraints = options[:constraints]
+        collection.each_key do |key|
+          key_ctx = Constraints::ValidationContext.key(key)
+          constraints.evaluate(key_ctx)
+          ctx.merge(key_ctx) if key_ctx.has_violations?
+        end
+      end
+    end
+
+    define(:start_with, message: 'start with %{constraint.prefix}') do
+      option(:prefix) do
+        not_blank(message: 'prefix is required')
+        is_a(String, message: 'prefix must be a String')
+      end
+
+      initialize do |prefix = nil|
+        return {} if prefix.nil?
+
+        { prefix: prefix }
+      end
+      evaluate do |value|
+        pass if value.nil?
+        fail unless value.respond_to?(:start_with?) && value.start_with?(options[:prefix])
+      end
+      key do
+        "start_with_#{options[:prefix]}"
+      end
+    end
+
+    define(:end_with, message: 'end with %{constraint.suffix}') do
+      option(:suffix) do
+        not_blank(message: 'suffix is required')
+        is_a(String, message: 'suffix must be a String')
+      end
+
+      initialize do |suffix = nil|
+        return {} if suffix.nil?
+
+        { suffix: suffix }
+      end
+      evaluate do |value|
+        pass if value.nil?
+        fail unless value.respond_to?(:end_with?) && value.end_with?(options[:suffix])
+      end
+      key do
+        "end_with_#{options[:suffix]}"
+      end
+    end
+
+    define(:contain, message: 'contain %{constraint.substring}') do
+      option(:substring) do
+        not_blank(message: 'substring is required')
+        is_a(String, message: 'substring must be a String')
+      end
+
+      initialize do |substring = nil|
+        return {} if substring.nil?
+
+        { substring: substring }
+      end
+      evaluate do |value|
+        pass if value.nil?
+        fail unless value.respond_to?(:include?) && value.include?(options[:substring])
+      end
+      key do
+        "contain_#{options[:substring]}"
+      end
+    end
+
+    define(:uuid, message: 'be a uuid') do
+      UUID_REGEXP = %r{\b\h{8}\b-\h{4}-\h{4}-\h{4}-\b\h{12}\b}
+
+      evaluate do |value|
+        pass if value.nil?
+        fail unless UUID_REGEXP.match?(value.to_s)
+      end
+    end
+
+    define(:hostname, message: 'be a hostname') do
+      HOSTNAME_REGEXP = URI::HOST
+
+      evaluate do |value|
+        pass if value.nil?
+        fail unless HOSTNAME_REGEXP.match?(value.to_s)
+      end
+    end
+
+    define(:uri, message: 'be a uri') do
+      option(:absolute, default: true) do
+        one_of([true, false], message: ':absolute must be true or false')
+      end
+
+      evaluate do |value|
+        pass if value.nil?
+        uri = begin
+                URI.parse(value)
+              rescue URI::Error
+                fail
+              end
+        fail unless options[:absolute] == uri.absolute?
+      end
+    end
+
+    define(:ip_address, message: 'be an ip address') do
+      option(:version, default: nil) do
+        one_of([:v4, :v6], message: 'must be a valid ip version')
+      end
+
+      initialize do |version = nil|
+        return {} if version.nil?
+
+        { version: version }
+      end
+      evaluate do |value|
+        pass if value.nil?
+        addr = begin
+                 IPAddr.new(value)
+               rescue IPAddr::Error
+                 fail
+               end
+        version = options[:version]
+        fail unless version.nil? || addr.send(:"ip#{version}?")
       end
     end
 
