@@ -461,6 +461,28 @@ module Validate
       end
     end
 
+    define(:ip_address, message: 'be an ip address') do
+      option(:version, default: nil) do
+        one_of([:v4, :v6], message: 'must be a valid ip version')
+      end
+
+      initialize do |version = nil|
+        return {} if version.nil?
+
+        { version: version }
+      end
+      evaluate do |value|
+        pass if value.nil?
+        addr = begin
+                 IPAddr.new(value)
+               rescue IPAddr::Error
+                 fail
+               end
+        version = options[:version]
+        fail unless version.nil? || addr.send(:"ip#{version}?")
+      end
+    end
+
     define(
         :unique,
         message: 'have unique %{constraint.describe_unique_attribute}'
