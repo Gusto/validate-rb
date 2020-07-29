@@ -31,9 +31,9 @@ module Validate
 
       def message
         @violations.group_by(&:path)
-            .transform_values { |violations| violations.map(&:message) }
-            .map { |path, messages| "#{path}: #{messages.join(' ')}" }
-            .join("\n")
+                   .transform_values { |violations| violations.map(&:message) }
+                   .map { |path, messages| "#{path}: #{messages.join(', ')}" }
+                   .join("\n")
       end
     end
   end

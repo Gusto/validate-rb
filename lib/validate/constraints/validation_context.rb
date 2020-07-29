@@ -66,8 +66,10 @@ module Validate
         !@violations.empty?
       end
 
-      def to_err
-        Error::ConstraintViolationError.new(@violations.freeze)
+      def to_err(backtrace = [])
+        err = Error::ConstraintViolationError.new(@violations.freeze)
+        err.set_backtrace(backtrace)
+        err
       end
 
       def merge(other)
@@ -104,6 +106,8 @@ module Validate
             Path.new(@paths.dup << path)
           when Path
             Path.new(@paths.dup << path.to_a)
+          else
+            raise ArgumentError, 'invalid path'
           end
         end
 
