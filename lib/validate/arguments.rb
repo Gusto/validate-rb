@@ -25,9 +25,14 @@ module Validate
       def guard_method(method, guard_module)
         return if @args.empty?
         guard = ArgumentsGuard.new(method, @args)
-        guard_module.__send__(:define_method, method.name) do |*args, &block|
-          guard.enforce!(*args, &block)
-          super(*args, &block)
+        guard_module.__send__(:define_method, method.name) do |*args, **kwargs, &block|
+          if kwargs.empty?
+            guard.enforce!(*args, &block)
+            super(*args, &block)
+          else
+            guard.enforce!(*args, **kwargs, &block)
+            super(*args, **kwargs, &block)
+          end
         end
       ensure
         @args = {}
