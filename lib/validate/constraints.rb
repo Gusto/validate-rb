@@ -445,6 +445,22 @@ module Validate
       end
     end
 
+    define(:uri, message: 'be a uri') do
+      option(:absolute, default: true) do
+        one_of([true, false], message: ':absolute must be true or false')
+      end
+
+      evaluate do |value|
+        pass if value.nil?
+        uri = begin
+                URI.parse(value)
+              rescue URI::Error
+                fail
+              end
+        fail unless options[:absolute] == uri.absolute?
+      end
+    end
+
     define(
         :unique,
         message: 'have unique %{constraint.describe_unique_attribute}'
