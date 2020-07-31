@@ -6,10 +6,14 @@ on:
     paths:
     - '**.rb'
     - '**.feature'
-    - '.github/**'
-    - 'docker'
+    - '.github/workflows/**'
     - 'Gemfile'
+    - 'Gemfile.lock'
+    - 'Rakefile'
     - '*.gemspec'
+    - 'package.json'
+    - 'release.config.js'
+    - 'yarn.lock'
   push:
     branches: [ main, alpha ]
     paths-ignore:
