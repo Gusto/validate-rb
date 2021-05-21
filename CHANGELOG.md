@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/Gusto/validate-rb/compare/v1.0.0...v1.1.0) (2021-05-21)
+
+
+### Features
+
+* upgrade dependencies ([#34](https://github.com/Gusto/validate-rb/issues/34)) ([795b851](https://github.com/Gusto/validate-rb/commit/795b851baf1eb2c0944f04ee5bf5d2edca85b819))
+
 # 1.0.0 (2020-07-29)
 
 
